@@ -11,31 +11,71 @@ import java.util.NoSuchElementException;
  */
 public class MyArrayList extends List {
 
-    public MyArrayList() {
+    private int[] array;
+    private int current_node;
+    private int capacity;
+    private int lenght = 0;
 
+    public MyArrayList() {
+        capacity = 0;
+        current_node = -1;
+        array = new int[0];
     }
 
     public MyArrayList(int capacity) {
-
+        this.capacity = capacity;
+        current_node = -1;
+        array = new int[capacity];
     }
 
     @Override
     void add(int item) {
-
-    }
+        lenght++;
+        if (capacity!=0){
+            array[++current_node] = item;
+            capacity--;
+        } else {
+            int[] new_array = new int[array.length + 1];
+            System.arraycopy(array,0, new_array , 0, array.length);
+            new_array[++current_node] = item;
+            array = new_array;
+            capacity = 0;
+        }
+     }
 
     @Override
     int remove(int idx) throws NoSuchElementException {
-        return 0;
+        if ((idx>=0)&(idx < array.length)) {
+
+            int ret = array[idx];
+            int[] new_array = new int[array.length];
+
+            System.arraycopy(array, 0, new_array, 0, idx);
+            System.arraycopy(array, idx+1, new_array, idx, array.length - 1 - idx);
+
+            array = new_array;
+            capacity++;
+            lenght--;
+            return ret;
+
+        } else {
+            throw new NoSuchElementException();
+        }
     }
 
     @Override
     int get(int idx) throws NoSuchElementException {
-        return 0;
+        int ret;
+        if ((idx>=0)&(idx<array.length)) {
+            ret = array[idx];
+            return ret;
+        } else {
+            throw new NoSuchElementException();
+        }
     }
 
     @Override
     int size() {
-        return 0;
+        return lenght;
     }
 }
