@@ -22,9 +22,6 @@ public class App {
         // 3) Get json body and JsonObject
         // 4) Get field "success" from JsonObject
 
-
-
-
         boolean success = false;
     }
 
