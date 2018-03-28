@@ -91,6 +91,9 @@ public class Analyzer {
         //System.out.println(hist);
 
         List<Integer> listValues = new ArrayList<>(values);
+
+        System.out.println("listValues");
+        System.out.println(listValues);
         listValues.sort((o1, o2) -> {
             System.out.println()
 

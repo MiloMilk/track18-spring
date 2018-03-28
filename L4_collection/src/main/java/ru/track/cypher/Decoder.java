@@ -1,7 +1,6 @@
 package ru.track.cypher;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -19,11 +18,15 @@ public class Decoder {
      * @param domain - текст по кторому строим гистограмму языка
      */
     public Decoder(@NotNull String domain, @NotNull String encryptedDomain) {
+
         Map<Character, Integer> domainHist = createHist(domain);
         Map<Character, Integer> encryptedDomainHist = createHist(encryptedDomain);
 
         cypher = new LinkedHashMap<>();
 
+        for (int i = 0; i < domainHist.keySet().size(); i++ ){
+            cypher.put((Character) encryptedDomainHist.keySet().toArray()[i], (Character) domainHist.keySet().toArray()[i]);
+        }
 
     }
 
@@ -39,7 +42,19 @@ public class Decoder {
      */
     @NotNull
     public String decode(@NotNull String encoded) {
-        return null;
+
+        String low = encoded.toLowerCase();
+        StringBuilder builder = new StringBuilder();
+
+        for (int i = 0; i < low.length(); i++){
+            if (Character.isLetter(low.charAt(i))) {
+                builder.append(cypher.get(low.charAt(i)));
+            } else {
+                builder.append(low.charAt(i));
+            }
+        }
+
+        return builder.toString();
     }
 
     /**
@@ -53,7 +68,32 @@ public class Decoder {
      */
     @NotNull
     Map<Character, Integer> createHist(@NotNull String text) {
-        return null;
+
+        String low = text.toLowerCase();
+        Map<Character, Integer> map = new HashMap<>();
+
+        for (int i = 0; i < text.length(); i++){
+            if (Character.isLetter(low.charAt(i))) {
+
+                if (map.containsKey(low.charAt(i))) {
+                    map.put(low.charAt(i), map.get(low.charAt(i)) + 1);
+                } else {
+                    map.put(low.charAt(i), 1);
+                }
+            }
+
+        }
+
+        List<Map.Entry<Character, Integer>> list = new ArrayList<>(map.entrySet());
+        list.sort((o2, o1) -> o1.getValue().compareTo(o2.getValue()));
+
+        Map<Character, Integer> result = new LinkedHashMap<>();
+
+        for (Map.Entry<Character, Integer> entry : list) {
+            result.put(entry.getKey(), entry.getValue());
+        }
+
+        return result;
     }
 
 }
