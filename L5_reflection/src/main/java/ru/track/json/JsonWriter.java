@@ -2,8 +2,7 @@ package ru.track.json;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
@@ -14,6 +13,9 @@ import org.jetbrains.annotations.Nullable;
  * сериализатор в json
  */
 public class JsonWriter {
+
+    private Object object;
+    private Object object1;
 
     // В зависимости от типа объекта вызывает соответствующий способ сериализации
     public static String toJson(@Nullable Object object) {
@@ -60,9 +62,19 @@ public class JsonWriter {
     @NotNull
     private static String toJsonArray(@NotNull Object object) {
         int length = Array.getLength(object);
+        StringBuilder builder = new StringBuilder();
+        builder.append('[');
+
+        for (int i=0; i < length; i++){
+            builder.append(toJson(Array.get(object, i)));
+            if (i< length - 1){
+                builder.append(',');
+            }
+        }
+        builder.append(']');
         // TODO: implement!
 
-        return null;
+        return builder.toString();
     }
 
     /**
@@ -82,9 +94,17 @@ public class JsonWriter {
      */
     @NotNull
     private static String toJsonMap(@NotNull Object object) {
+        Map map = (Map) object;
+        Map<String,String> newmap = new LinkedHashMap<>(map);
+
+        for (Object enrty: map.keySet()){
+
+            newmap.put(enrty.toString(), toJson(map.get(enrty)));
+
+        }
         // TODO: implement!
 
-        return null;
+        return formatObject(newmap);
         // Можно воспользоваться этим методом, если сохранить все поля в новой мапе уже в строковом представлении
 //        return formatObject(stringMap);
     }
@@ -108,10 +128,41 @@ public class JsonWriter {
     @NotNull
     private static String toJsonObject(@NotNull Object object) {
         Class clazz = object.getClass();
+        Map<String, String> newmap = new LinkedHashMap<>();
+
+        Field[] fields = clazz.getDeclaredFields();
+
+        for (Field field : fields) {
+            field.setAccessible(true);
+
+            try {
+                if (clazz.isAnnotationPresent(JsonNullable.class)){
+
+                    if (field.isAnnotationPresent(SerializedTo.class)){
+                        newmap.put(field.getAnnotation(SerializedTo.class).value(), toJson(field.get(object)));
+                    } else {
+                        newmap.put(field.getName(), toJson(field.get(object)));
+                    }
+
+                } else {
+
+                    if (field.get(object) != null) {
+                        if (field.isAnnotationPresent(SerializedTo.class)) {
+                            newmap.put(field.getAnnotation(SerializedTo.class).value(), toJson(field.get(object)));
+                        } else {
+                            newmap.put(field.getName(), toJson(field.get(object)));
+                        }
+                    }
+
+                }
+            } catch (Exception e){
+
+            }
+        }
         // TODO: implement!
 
 
-        return null;
+        return formatObject(newmap);
     }
 
     /**
@@ -130,4 +181,9 @@ public class JsonWriter {
         return String.format("{%s}", r);
     }
 
+    public static void main(String[] args) throws Exception {
+
+    }
+
 }
+
