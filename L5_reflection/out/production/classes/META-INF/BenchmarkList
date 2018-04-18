@@ -1,0 +1,5 @@
+JMH S 26 ru.track.jmh.JMH_Exception S 54 ru.track.jmh.generated.JMH_Exception_testThrow_jmhTest S 9 testThrow S 11 AverageTime E A 1 1 1 E I 1 5 E E I 1 5 E E I 1 1 E E E E E M 1 5 depth 4 1 0 1 1 2 10 3 100 U 11 NANOSECONDS E E 
+JMH S 28 ru.track.jmh.JMH_newInstance S 62 ru.track.jmh.generated.JMH_newInstance_testNewInstance_jmhTest S 15 testNewInstance S 11 AverageTime E A 1 1 1 E I 1 5 E E I 1 5 E E I 1 1 E E E E E E U 11 NANOSECONDS E E 
+JMH S 28 ru.track.jmh.JMH_newInstance S 62 ru.track.jmh.generated.JMH_newInstance_testNewOperator_jmhTest S 15 testNewOperator S 11 AverageTime E A 1 1 1 E I 1 5 E E I 1 5 E E I 1 1 E E E E E E U 11 NANOSECONDS E E 
+JMH S 28 ru.track.jmh.JMH_newInstance S 62 ru.track.jmh.generated.JMH_newInstance_testNewOperator_jmhTest S 15 testNewOperator S 14 SingleShotTime E A 1 1 1 E I 1 5 E E I 1 5 E E I 1 1 E E E E E E U 11 NANOSECONDS E E 
+JMH S 28 ru.track.jmh.JMH_newInstance S 62 ru.track.jmh.generated.JMH_newInstance_testNewInstance_jmhTest S 15 testNewInstance S 14 SingleShotTime E A 1 1 1 E I 1 5 E E I 1 5 E E I 1 1 E E E E E E U 11 NANOSECONDS E E 

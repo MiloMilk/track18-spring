@@ -48,12 +48,16 @@ public class MyArrayList extends List {
         if ((idx>=0)&(idx < array.length)) {
 
             int ret = array[idx];
-            int[] new_array = new int[array.length];
 
-            System.arraycopy(array, 0, new_array, 0, idx);
-            System.arraycopy(array, idx+1, new_array, idx, array.length - 1 - idx);
+            int i = idx;
+            if (i < array.length - 1){
+                while (i < array.length - 1){
+                    array[i]=array[i+1];
+                    i++;
+                }
+            }
 
-            array = new_array;
+
             capacity++;
             lenght--;
             return ret;
