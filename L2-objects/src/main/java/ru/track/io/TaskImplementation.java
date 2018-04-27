@@ -26,65 +26,78 @@ public final class TaskImplementation implements FileEncoder {
      */
     @NotNull
     public File encodeFile(@NotNull String finPath, @Nullable String foutPath) throws IOException {
-
         File fin = new File(finPath);
-        InputStream is = new FileInputStream(fin);
 
         final File fout;
 
         if (foutPath != null) {
             fout = new File(foutPath);
         } else {
-            fout = File.createTempFile("C:\\Users\\Ivan\\Desktop\\based_file_", ".txt");
+            fout = File.createTempFile("based_file_", ".txt");
             fout.deleteOnExit();
         }
 
         StringBuilder builder = new StringBuilder();
-        byte fileContent[] = new byte[(int)fin.length()];
-
-        is.read(fileContent);
-        is.close();
+        byte[] i = new byte[3];
         String byt;
+        OutputStream out = null;
 
-        for (byte i: fileContent) {
-            byt = Integer.toBinaryString(i&0xFF);
-            for (int z = 0; z < 8 - byt.length(); z++)
-                builder.append("0");
-            builder.append(Integer.toBinaryString(i&0xFF));
+
+        try(InputStream is = new FileInputStream(fin)) {
+            int res = (int) fin.length() % 3;
+            int num = (int) fin.length()/3;
+            int c;
+
+            out = new FileOutputStream(fout);
+
+            while (num>0){
+                is.read(i);
+                num --;
+                c = (int)((i[0]&0xFF)>>2);
+                out.write(toBase64[c]);
+
+                c = (int) ( (i[0]&0xFF>>6)<<4) + ((i[1]&0xFF)>>4);
+                out.write(toBase64[c]);
+
+                c = (int) ((i[1]&0xFF>>4)<<2) + ((i[2]&0xFF)>>6);
+                out.write(toBase64[c]);
+
+                c = (int)(i[2]&0xFF>>2);
+                out.write(toBase64[c]);
+                out.flush();
+            }
+
+            if (res==1){
+                is.read(i);
+                c = (int)((i[0]&0xFF)>>2);
+                out.write(toBase64[c]);
+
+                c = (int) ((i[0]&0xFF>>6)<<4);
+                out.write(toBase64[c]);
+                out.write('=');
+                out.write('=');
+            }
+
+            if (res==2){
+                is.read(i);
+                c = (int)((i[0]&0xFF)>>2);
+                out.write(toBase64[c]);
+
+                c = (int) ( (i[0]&0xFF>>6)<<4) + ((i[1]&0xFF)>>4);
+                out.write(toBase64[c]);
+
+                c = (int) ((i[1]&0xFF>>4)<<2);
+                out.write(toBase64[c]);
+                out.write('=');
+            }
+
+        } catch (Exception e) {
+            if(out!=null){
+                out.close();
+            }
         }
-
-        int eq = 0;
-        while (builder.toString().length()%6 != 0) {
-            builder.append("00000000");
-            eq++;
-        }
-        String bitcode = builder.toString();
-
-        int curr_index = 0;
-        StringBuilder base = new StringBuilder();
-
-        for (int t = 0; t != bitcode.length()/6 - eq; t++){
-            String current_string = bitcode.substring(curr_index, curr_index+6);
-            int a = Integer.parseInt(current_string, 2);
-
-            base.append(toBase64[a]);
-            curr_index += 6;
-        }
-
-        if (eq != 0){
-            if (eq == 1)
-                base.append("=");
-            else
-                base.append("==");
-        }
-
-
-        FileOutputStream writer = new FileOutputStream(fout);
-        writer.write(base.toString().getBytes());
-        writer.flush();
-        writer.close();
-        /* XXX: https://docs.oracle.com/javase/8/docs/api/java/io/File.html#deleteOnExit-- */
         return fout;
+
     }
 
     private static final char[] toBase64 = {
